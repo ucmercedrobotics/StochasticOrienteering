@@ -466,13 +466,13 @@ if __name__ == "__main__":
     
     #backup configuration file and the version of the code used
     shutil.copyfile(args.conf,os.path.join(args.logdir,"config.txt"))
-    shutil.copyfile("MCTS_MILP.py",os.path.join(args.logdir,"MCTS_MILP.py"))
+    shutil.copyfile("mcts_MILP.py",os.path.join(args.logdir,"mcts_MILP.py"))
     
     print('Processing graph with {} vertices'.format(config.NVERTICES))
     print('Budget is ',config.BUDGET)
     print('Failure probability is ',config.FAILURE_PROBABILITY)
     
-    og = graph.OrienteeringGraph('graph_test_{}.mat'.format(config.NVERTICES))
+    og = graph.OrienteeringGraph('../datasets/graph_test_{}.mat'.format(config.NVERTICES))
     og.budget = config.BUDGET
   #  print(sum([a.value for a in og.vertices.values()]))
     

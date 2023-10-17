@@ -1,0 +1,8 @@
+# PyCache
+**__pycache__**
+
+# VSCode
+.vscode/
+
+# MCTS Specific Ignores
+sandbox/

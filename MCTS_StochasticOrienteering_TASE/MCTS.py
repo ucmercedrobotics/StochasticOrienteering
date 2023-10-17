@@ -893,7 +893,7 @@ if __name__ == "__main__":
     print('Starting...')
     
     read_configuration(args.conf)   
-    og = graph.OrienteeringGraph('graph_test_{}.mat'.format(NVERTICES))
+    og = graph.OrienteeringGraph('../datasets/graph_test_{}.mat'.format(NVERTICES))
 
     if not os.path.isdir(args.logdir):
         print("{} does not exist and will be created".format(args.logdir))
