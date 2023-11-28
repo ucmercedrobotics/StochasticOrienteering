@@ -472,7 +472,7 @@ if __name__ == "__main__":
     print('Budget is ',config.BUDGET)
     print('Failure probability is ',config.FAILURE_PROBABILITY)
     
-    og = graph.OrienteeringGraph('graph_test_{}.mat'.format(config.NVERTICES))
+    og = graph.OrienteeringGraph('../datasets/graph_test_{}.mat'.format(config.NVERTICES))
     og.budget = config.BUDGET
   #  print(sum([a.value for a in og.vertices.values()]))
     
