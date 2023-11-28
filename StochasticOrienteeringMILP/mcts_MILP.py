@@ -547,11 +547,14 @@ if __name__ == "__main__":
         f.write("Vertices:{}\n".format(config.NVERTICES))
         f.write("Budget:{}\n".format(config.BUDGET))
         f.write("Average Reward: {}\n".format(np.mean(obj_list)))
+        f.write("Stddev Reward: {}\n".format(np.std(obj_list)))
         #f.write("Path length: {}\n".format(sol_length ))
         f.write("Average Solution time: {}\n".format(np.mean(time_list)))
+        f.write("Stddev Solution time: {}\n".format(np.std(time_list)))
         f.write("Nominal Failure Probability:{}\n".format(config.FAILURE_PROBABILITY))
         f.write("Adjusted Failure Probability: {}\n".format(config.ALPHA))
         f.write("Average Actual Failure Probability: {}\n".format(np.mean(failure_list)))
+        f.write("Stddev Actual Failure Probability: {}\n".format(np.std(failure_list)))
     
 
         
