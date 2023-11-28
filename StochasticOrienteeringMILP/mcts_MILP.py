@@ -355,20 +355,6 @@ def create_nested_path(path):
             os.mkdir(partial_path)
             
 
-parser = argparse.ArgumentParser(description='Process parameters.')
-parser.add_argument(
-    '--logdir', 
-    type = str, 
-    default = 'sandbox',
-    help = 'Directory where data will be saved')
-
-parser.add_argument(
-    '--conf', 
-    type = str, 
-    default = 'config.txt',
-    help = 'Config file to use')
-
-args = parser.parse_args()
 
 def read_configuration(fname):
     configfile = configparser.ConfigParser()
@@ -457,6 +443,11 @@ if __name__ == "__main__":
     
     print('Starting...')
     
+    parser = argparse.ArgumentParser(description='Process parameters.')
+    parser.add_argument('--logdir', type = str, default = 'sandbox', help = 'Directory where data will be saved')
+    parser.add_argument('--conf', type = str, default = 'config.txt', help = 'Config file to use')
+    args = parser.parse_args()
+
     read_configuration(args.conf)   
     
     if not os.path.isdir(args.logdir):
