@@ -1,24 +1,7 @@
-    #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Sep 14 13:45:42 2021
-
-@author: shamano
-"""
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Sep 12 16:14:59 2021
 
-@author: shamano
-"""
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Jun  2 13:08:48 2021
 
-@author: shamano
-"""
 
 # Produces the figure in the paper for the sensitivity to iterations
 
@@ -135,14 +118,14 @@ if __name__ == "__main__":
     # THIS IS THE NEW PLOTTING METHOD
     N_START = 1
     N_END = 50
-    read_configuration("NEWCASE/Samples/1/config.txt")
+    read_configuration("TASE/Samples/1/config.txt")
     samples_list =  [(SAMPLESMIN + i*SAMPLESINC) for i in range(SAMPLESN)]
     success_series = np.zeros((N_END,len(samples_list)))
 
     for INDEX in range(1,N_END+1):
 
-        read_configuration("NEWCASE/Samples/{}/config.txt".format(INDEX))
-        complete_budget = pickle.load(open("NEWCASE/Samples/{}/complete_budget_series.dat".format(INDEX),"rb"))
+        read_configuration("TASE/Samples/{}/config.txt".format(INDEX))
+        complete_budget = pickle.load(open("TASE/Samples/{}/complete_budget_series.dat".format(INDEX),"rb"))
 
         start = 0
         for i in range(len(samples_list)):
@@ -182,7 +165,8 @@ if __name__ == "__main__":
     #axtime.plot(iterations_a,time_series + time_deviation,color=colormin,linewidth=2)
     axtime.tick_params(axis='y')
     figtime.tight_layout()  # otherwise the right y-label is slightly clipped
-    plt.grid(b=True,which='major',axis='both')
-    plt.ylim(0,1.05*np.max(success_series))
+    #plt.grid(b=True,which='major',axis='both')
+    plt.grid(visible=True,which='major',axis='both')
+    plt.ylim(0,1.05*np.max(mean_v+std_v))
     plt.show()
     figtime.savefig('samples_dependency.pdf')
