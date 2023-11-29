@@ -476,7 +476,7 @@ if __name__ == "__main__":
         print("Solving using CBC MILP Solver...")
         
     print("Solving the problem {} times".format(config.REPEATS))
-    bar = Bar('Processing', max=config.REPEATS)
+    bar = Bar('Processing', max=config.REPEATS) 
     
     obj_list = [] 
     time_list = []
@@ -543,7 +543,7 @@ if __name__ == "__main__":
         f.write("Average Solution time: {}\n".format(np.mean(time_list)))
         f.write("Stddev Solution time: {}\n".format(np.std(time_list)))
         f.write("Nominal Failure Probability:{}\n".format(config.FAILURE_PROBABILITY))
-        f.write("Adjusted Failure Probability: {}\n".format(config.ALPHA))
+        f.write("Adjusted Failure Probability: {}\n".format(config.ALPHAMILP))
         f.write("Average Actual Failure Probability: {}\n".format(np.mean(failure_list)))
         f.write("Stddev Actual Failure Probability: {}\n".format(np.std(failure_list)))
     
