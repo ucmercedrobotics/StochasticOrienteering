@@ -327,31 +327,3 @@ if __name__ == "__main__":
     charts_time(MCTS,MILP)
     
     
-            
-# now format the results 
-
-# first table 
-
-# b = 2
-# print("Budget = ",b)
-
-# for v in VERTICES:
-#   #  print("V ={}".format(v))
-#     print("{} &".format(v),end=" ")
-#     for p in PF:
-#         print("{} & {} & {} & ".format(results_map[(v,b,p)][0],results_map[(v,b,p)][2],results_map[(v,b,p)][1]),end=" " )
-#     print(r"\\")
-        
-      
-# b = 3
-# print("Budget = ",b)
-
-# for v in VERTICES:
-#     #print("V ={}".format(v))
-#     print("{} &".format(v),end=" ")
-#     for p in PF:
-#         print("{} & {} & {} & ".format(results_map[(v,b,p)][0],results_map[(v,b,p)][2],results_map[(v,b,p)][1]),end=" " )
-
-
-
-#     print(r"\\")
