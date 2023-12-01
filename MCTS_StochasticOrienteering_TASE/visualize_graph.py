@@ -24,23 +24,34 @@ import time
 import os.path
 import os
 import shutil
+import glob
 
 
-VERTICES_LIST = [10,20,30,40]
+file_list = glob.glob('../datasets/*.mat')
 
-for NVERTICES in VERTICES_LIST:
+for fname in file_list:
 
-    og = graph.OrienteeringGraph('graph_test_{}.mat'.format(NVERTICES))
+    og = graph.OrienteeringGraph(fname)
  
-
+    NVERTICES = og.get_n_vertices()
     x = [og.vertices[i].x for i in og.vertices.keys()]
     y = [og.vertices[i].y for i in og.vertices.keys()]
 
-    fig = plt.figure(figsize = (5,5))
+  #  fig = plt.figure(figsize = (5,5))
+    fig = plt.figure()
    # for i  in range(len(x)):
     plt.plot(x,y,'o',markersize=10)
-    plt.xlim([0,1])
-    plt.ylim([0,1])
+    if min(x) > 0:
+        plt.xlim([0.9*min(x),1.1*max(x)])
+    else:
+        plt.xlim([1.1*min(x),1.1*max(x)])
+        
+    if min(y) > 0:
+        plt.ylim([0.9*min(y),1.1*max(y)])
+    else:
+        plt.ylim([1.1*min(y),1.1*max(y)])    
+        
+    #plt.ylim([0.95*min(y),1.05*max(y)])
     plt.rc('xtick', labelsize=20) 
     plt.rc('ytick', labelsize=20) 
     #plt.axis('equal')
@@ -49,7 +60,9 @@ for NVERTICES in VERTICES_LIST:
     plt.plot(x[0],y[0],'ro')
     plt.plot(x[NVERTICES-1],y[NVERTICES-1],'ko')
     
-    fig.savefig('graph_{}.pdf'.format(NVERTICES))
+    bn = os.path.basename(fname)
+    
+    fig.savefig(bn.rsplit( ".", 1 )[ 0 ] +'.pdf')
 #fig.tight_layout()
 
 #ax = fig.gca()
