@@ -379,11 +379,6 @@ def read_configuration(fname):
     else:
          config.SOLVER = configfile['MAIN']['SOLVER']
          
-    if configfile['MAIN']['NVERTICES'] is None:
-        print('Missing configuration parameter NVERTICES')
-    else:
-         config.NVERTICES = int(configfile['MAIN']['NVERTICES'])
-         
     if configfile['MAIN']['BUDGET'] is None:
         print('Missing configuration parameter BUDGET')
     else:
