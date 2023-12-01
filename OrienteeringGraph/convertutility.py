@@ -15,7 +15,7 @@ import scipy.io as sio
 
 
 def load_graph(fname):
-    problem = tsplib95.load('../datasets/ulysses16.tsp')
+    problem = tsplib95.load(fname)
     G = problem.get_graph()
     return G
     
