@@ -409,6 +409,12 @@ def read_configuration(fname):
     else:
          config.REPEATS = int(configfile['MAIN']['REPEATS'])
          
+    if configfile['MAIN']['FILENAME'] is None:
+        print('Missing mandatory configuration parameter NVERTICES. Aboriting')
+        exit(1)
+    else:
+         config.FILENAME = configfile['MAIN']['FILENAME']
+         
          
 def solve_orienteering_problem_MILP(og):
     prob = create_pulp_instance(og,config.ALPHAMILP)
@@ -459,13 +465,16 @@ if __name__ == "__main__":
     shutil.copyfile(args.conf,os.path.join(args.logdir,"config.txt"))
     shutil.copyfile("MCTS_MILP.py",os.path.join(args.logdir,"MCTS_MILP.py"))
     
+   
+    
+    og = graph.OrienteeringGraph('../datasets/'+config.FILENAME)
+    config.NVERTICES = og.get_n_vertices()
+    og.budget = config.BUDGET
+  #  print(sum([a.value for a in og.vertices.values()]))
+  
     print('Processing graph with {} vertices'.format(config.NVERTICES))
     print('Budget is ',config.BUDGET)
     print('Failure probability is ',config.FAILURE_PROBABILITY)
-    
-    og = graph.OrienteeringGraph('../datasets/graph_test_{}.mat'.format(config.NVERTICES))
-    og.budget = config.BUDGET
-  #  print(sum([a.value for a in og.vertices.values()]))
     
    
   #  print(prob)
