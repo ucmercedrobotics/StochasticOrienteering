@@ -32,7 +32,7 @@ MAX_X = 1
 MAX_Y = 1
 VERBOSE=True
 
-
+TOLERANCE = 0.00001
 
 
 
@@ -238,6 +238,25 @@ def load_orienteering_graph(fname):
                 distance_matrix[i][j] = vertices[i].get_edge_towards_vertex(j).d
                 
     return vertices,distance_matrix,budget
+
+def compare_graphs(a,b):
+    
+    if a.budget != b.budget:
+        return False
+    
+    if a.alpha != b.alpha:
+        return False
+    
+    if a.nvertices != b.nvertices:
+        return False
+    
+    for i in range(a.nvertices):
+        if (abs(a.vertices[i].x  -  b.vertices[i].x) > TOLERANCE) or \
+           (abs(a.vertices[i].y  -  b.vertices[i].y) > TOLERANCE) or \
+           (abs(a.vertices[i].value  -  b.vertices[i].value) > TOLERANCE):
+           return False
+    
+    return True
         
 class OrienteeringGraph:
     #@track
