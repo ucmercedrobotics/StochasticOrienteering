@@ -61,7 +61,7 @@ for fname in file_list:
     plt.axis('equal')
 
     plt.grid()
-    plt.title(bn)
+    plt.title(bn.rsplit( ".", 1 )[ 0 ] )
     plt.plot(x[0],y[0],'ro')
     plt.plot(x[NVERTICES-1],y[NVERTICES-1],'ko')
     

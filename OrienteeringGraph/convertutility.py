@@ -6,8 +6,9 @@ Created on Thu Nov 30 17:30:33 2023
 @author: shamano
 """
 
+# converts tsp files to internal mat format
+
 import tsplib95
-import networkx as nx
 import numpy as np
 import graph
 import sys
@@ -94,15 +95,7 @@ if __name__=="__main__":
     
     if graph.compare_graphs(orienteering_graph, og):
         print("Conversion successfully commpleted")
+        print(f"Budget set to {og.budget}")
     else:
         print("Conversion unsuccessful")
     
-   # nx.draw(G)
-    # nx.draw_networkx(G)
-    # pos = nx.spring_layout(G)
-    # for i in range(len(pos)):
-    #     for j in range(len(pos)):
-    #         if i != j:
-    #             Eu = np.linalg.norm(pos[i]-pos[j])
-    #             original = G.adj[i][j]['weight']
-    #             print(original/Eu)
