@@ -405,7 +405,7 @@ def read_configuration(fname):
          config.REPEATS = int(configfile['MAIN']['REPEATS'])
          
     if configfile['MAIN']['FILENAME'] is None:
-        print('Missing mandatory configuration parameter NVERTICES. Aboriting')
+        print('Missing mandatory configuration parameter FILENAME. Aboriting')
         exit(1)
     else:
          config.FILENAME = configfile['MAIN']['FILENAME']
