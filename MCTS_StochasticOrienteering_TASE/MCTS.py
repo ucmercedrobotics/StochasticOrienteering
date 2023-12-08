@@ -123,8 +123,6 @@ def get_key_with_max_val(d):   # CANDIDATE FOR BETTER IMPLEMENTATION --> should 
     return keys[a]
 
 
-
-
 def get_key_with_min_val(d):
     bestValue = float('inf')
     bestKey = None
@@ -715,112 +713,87 @@ def read_configuration(fname):
     if configfile['MAIN']['NTRIALS'] is None:
         print('Missing configuration parameter NTRIALS')
     else:
-         config.NTRIALS = int(config['MAIN']['NTRIALS'])
-         
-    if configfile['MAIN']['DEPTHLIMIT'] is None:
-        print('Missing configuration parameter DEPTHLIMIT')
-    else:
-         config.DEPTHLIMIT = int(config['MAIN']['DEPTHLIMIT'])   
-         
-    if configfile['MAIN']['RETRIES'] is None:
-        print('Missing configuration parameter RETRIES')
-    else:
-         config.RETRIES = int(config['MAIN']['RETRIES'])     
-    
+         config.NTRIALS = int(configfile['MAIN']['NTRIALS'])
+            
     if configfile['MAIN']['REPETITIONS'] is None:
         print('Missing configuration parameter REPETITIONS')
     else:
-         config.REPETITIONS = int(config['MAIN']['REPETITIONS']) 
+         config.REPETITIONS = int(configfile['MAIN']['REPETITIONS']) 
          
     if configfile['MAIN']['EPSMIN'] is None:
         print('Missing configuration parameter EPSMIN')
     else:
-         config.EPSMIN = float(config['MAIN']['EPSMIN']) 
+         config.EPSMIN = float(configfile['MAIN']['EPSMIN']) 
          
     if configfile['MAIN']['EPSN'] is None:
         print('Missing configuration parameter EPSN')
     else:
-         config.EPSN = int(config['MAIN']['EPSN']) 
+         config.EPSN = int(configfile['MAIN']['EPSN']) 
         
     if configfile['MAIN']['EPSINC'] is None:
         print('Missing configuration parameter EPSINC')
     else:
-         config.EPSINC = float(config['MAIN']['EPSINC']) 
+         config.EPSINC = float(configfile['MAIN']['EPSINC']) 
          
     if configfile['MAIN']['ITERMIN'] is None:
         print('Missing configuration parameter ITERMIN')
     else:
-         config.ITERMIN = int(config['MAIN']['ITERMIN']) 
+         config.ITERMIN = int(configfile['MAIN']['ITERMIN']) 
          
     if configfile['MAIN']['ITERINC'] is None:
         print('Missing configuration parameter ITERINC')
     else:
-         config.ITERINC = int(config['MAIN']['ITERINC']) 
+         config.ITERINC = int(configfile['MAIN']['ITERINC']) 
         
     if configfile['MAIN']['ITERN'] is None:
         print('Missing configuration parameter ITERN')
     else:
-         config.ITERN = int(config['MAIN']['ITERN']) 
-         
-    if configfile['MAIN']['MINFREQ'] is None:
-        print('Missing configuration parameter MINFREQ')
-    else:
-         config.MINFREQ = int(config['MAIN']['MINFREQ']) 
+         config.ITERN = int(configfile['MAIN']['ITERN']) 
          
     if configfile['MAIN']['SAMPLESMIN'] is None:
         print('Missing configuration parameter SAMPLESMIN')
     else:
-         config.SAMPLESMIN = int(config['MAIN']['SAMPLESMIN'])   
+         config.SAMPLESMIN = int(configfile['MAIN']['SAMPLESMIN'])   
          
     if configfile['MAIN']['SAMPLESINC'] is None:
         print('Missing configuration parameter SAMPLESINC')
     else:
-         config.SAMPLESINC = int(config['MAIN']['SAMPLESINC'])   
+         config.SAMPLESINC = int(configfile['MAIN']['SAMPLESINC'])   
          
     if configfile['MAIN']['SAMPLESN'] is None:
         print('Missing configuration parameter SAMPLESN')
     else:
-        config. SAMPLESN = int(config['MAIN']['SAMPLESN'])   
+        config.SAMPLESN = int(configfile['MAIN']['SAMPLESN'])   
          
     if configfile['MAIN']['BIAS'] is None:
         print('Missing configuration parameter BIAS')
     else:
-         config.BIAS = float(config['MAIN']['BIAS']) 
-    
-    if configfile['MAIN']['CONTRACTION'] is None:
-        print('Missing configuration parameter CONTRACTION')
-    else:
-         config.CONTRACTION = float(config['MAIN']['CONTRACTION'])         
+         config.BIAS = float(configfile['MAIN']['BIAS'])         
 
     if configfile['MAIN']['VERBOSE'] is None:
         print('Missing configuration parameter VERBOSE')
     else:
-         config.VERBOSE = (config['MAIN']['VERBOSE'] == "True")
-         
-    if configfile['MAIN']['LIMITEXPLOREDEPTH'] is None:
-        print('Missing configuration parameter LIMITEXPLOREDEPTH')
-    else:
-         config.LIMITEXPLOREDEPTH = (config['MAIN']['LIMITEXPLOREDEPTH'] == "True") 
+         config.VERBOSE = (configfile['MAIN']['VERBOSE'] == "True")
          
     if configfile['MAIN']['BUDGET'] is None:
         print('Missing configuration parameter BUDGET')
     else:
-         config.BUDGET = float(config['MAIN']['BUDGET'])  
+         config.BUDGET = float(configfile['MAIN']['BUDGET'])  
          
     if configfile['MAIN']['FAILURE_PROB'] is None:
         print('Missing configuration parameter FAILURE_PROB')
     else:
-         config.FAILURE_PROB = float(config['MAIN']['FAILURE_PROB']) 
+         config.FAILURE_PROB = float(configfile['MAIN']['FAILURE_PROB']) 
          
     if configfile['MAIN']['GREEDY_THRESHOLD'] is None:
         print('Missing configuration parameter GREEDY_THRESHOLD')
     else:
-         config.GREEDY_THRESHOLD = float(config['MAIN']['GREEDY_THRESHOLD'])
+         config.GREEDY_THRESHOLD = float(configfile['MAIN']['GREEDY_THRESHOLD'])
          
     if configfile['MAIN']['ROLLOUT'] is None:
         print('Missing configuration parameter ROLLOUT')
     else:
-         config.ROLLOUT = int(config['MAIN']['ROLLOUT'])
+         config.ROLLOUT = int(configfile['MAIN']['ROLLOUT'])
          
     if configfile['MAIN']['FILENAME'] is None:
         print('Missing mandatory configuration parameter FILENAME. Aboriting')
@@ -874,14 +847,12 @@ if __name__ == "__main__":
     og = graph.OrienteeringGraph('../datasets/'+config.FILENAME)
     config.NVERTICES = og.get_n_vertices()
     og.budget = config.BUDGET
+    og.set_budget(config.BUDGET)
     
+    print('Processsing file ../datasets/'+config.FILENAME)
     print('Processing graph with {} vertices'.format(config.NVERTICES))
     print('Budget is ',config.BUDGET)
-    og.set_budget(config.BUDGET)
-   
-
-    
-    print("ROLLOUT:",config.ROLLOUT)
+    print("Rollout strategy:",config.ROLLOUT)
     
     if config.ROLLOUT == 1:
         rollout_function = MCTS_TASE_greedy_rollout
