@@ -99,7 +99,7 @@ class MCTS_rollout_data:
         #    print("Here is wrong pointer")
         self.budget = b  # residual budget
         if bias is None:
-            self.bias = BIAS
+            self.bias = config.BIAS
         else:
             self.bias = bias    
         
@@ -717,11 +717,6 @@ def read_configuration(fname):
     else:
          config.NTRIALS = int(config['MAIN']['NTRIALS'])
          
-    if configfile['MAIN']['NVERTICES'] is None:
-        print('Missing configuration parameter NVERTICES')
-    else:
-         config.NVERTICES = int(config['MAIN']['NVERTICES'])
-         
     if configfile['MAIN']['DEPTHLIMIT'] is None:
         print('Missing configuration parameter DEPTHLIMIT')
     else:
@@ -923,7 +918,7 @@ if __name__ == "__main__":
     best_time = []
     best_pulls = []
     
-    BIAS = 0.1
+    config.BIAS = 0.1
     
     absolute_best = -1
     found_absolute_best = False
@@ -999,7 +994,7 @@ if __name__ == "__main__":
                     best_folicy_failure.append(policyFailure/ntrials)
                     best_time.append(av_time)
                     best_pulls.append(av_pulls)
-                    best_bias.append(BIAS)
+                    best_bias.append(config.BIAS)
                     best_iterations.append(iterations)
                   #  best_tree_leaves.append(MCTS_tree_leaf_number(tree))
                   #  best_tree_depth.append(MCTS_tree_depth(tree))
