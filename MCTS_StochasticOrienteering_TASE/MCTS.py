@@ -25,35 +25,11 @@ import time
 import os.path
 import os
 import shutil
+import importlib
+import config
 
+importlib.reload(config)
 
-FAILURE_RETURN = 0
-FAILURE_PROB = 0
-P_FACTOR = 5
-BIAS = 0
-RETRIES = 4
-EPSILON = 0.3
-REPETITIONS = 0
-NVERTICES = 0
-DEPTHLIMIT = 0
-NTRIALS = 0
-EPSMIN = 0
-EPSN = 0
-EPSINC = 0
-ITERMIN = 0
-ITERINC = 0
-ITERN = 0
-MINFREQ = 0
-SAMPLESMIN = 0 
-SAMPLESINC = 0
-SAMPLESN = 0
-SAMPLES = 0
-CONTRACTION = 0
-VERBOSE = False
-LIMITEXPLOREDEPTH=False
-BUDGET=0
-GREEDY_THRESHOLD = 2
-ROLLOUT = 1
 
 BUFFER_DISTANCES = {}
 SUM_BUFFER_DISTANCE = {}
@@ -226,7 +202,7 @@ def MCTS_get_new_vertex_greedy(g,current,children,budget,unusable=None):
 
      #       failure_prob = (((dist1+dist2)>budget).sum())/SAMPLES
             failure_prob = ((SUM_BUFFER_DISTANCE[(v.id,i,i,end_id)]>budget).sum())/SAMPLES
-            if failure_prob < FAILURE_PROB :
+            if failure_prob < config.FAILURE_PROB :
                 #dist = np.mean(dist1+dist2)
                 dist = MEAN_DIST[(v.id,i,i,end_id)]
                 value = g.vertices[i].value
@@ -256,16 +232,16 @@ def MCTS_greedy_rollout_expansion(leaf,g,budget,vs):   # only called if leaf is 
 
     traversed = []
     while not done:
-        if np.random.uniform() < GREEDY_THRESHOLD:
+        if np.random.uniform() < config.GREEDY_THRESHOLD:
             new = MCTS_get_new_vertex_greedy(g,current,children,budget)
         else:
             new = np.random.choice(children)
 
         traversed.append(new)
         time_to_go = 0
-        for _ in range(REPETITIONS):
+        for _ in range(config.REPETITIONS):
             time_to_go += g.vertices[current].get_edge_towards_vertex(new).sample_cost()
-        time_to_go /= REPETITIONS
+        time_to_go /= config.REPETITIONS
         if time_to_go > budget:
             return traversed, True# failure
         if new == end_vertex_idx:
@@ -389,7 +365,7 @@ def MCTS_TASE_greedy_rollout2(leaf,g,budget,vs,visited):
         v = g.get_vertex_by_id(current)
         if new != end_id:
             failure_prob = ((SUM_BUFFER_DISTANCE[(v.id,new,new,end_id)]>budget).sum())/SAMPLES
-            if failure_prob <= FAILURE_PROB :
+            if failure_prob <= config.FAILURE_PROB :
                 reward += g.vertices[new].value
                 traversed.append(new)
                 time_to_go = g.vertices[current].get_edge_towards_vertex(new).sample_cost()
@@ -431,7 +407,7 @@ def MCTS_TASE_greedy_rollout3(leaf,g,budget,vs,visited):
         v = g.get_vertex_by_id(current)
         if new != end_id:
             failure_prob = ((SUM_BUFFER_DISTANCE[(v.id,new,new,end_id)]>budget).sum())/SAMPLES
-            if failure_prob <= FAILURE_PROB :
+            if failure_prob <= config.FAILURE_PROB :
                 reward += g.vertices[new].value
                 traversed.append(new)
                 time_to_go = g.vertices[current].get_edge_towards_vertex(new).sample_cost()
@@ -488,7 +464,7 @@ def MCTS_TASE_greedy_rollout4(leaf,g,budget,vs,visited):
         v = g.get_vertex_by_id(current)
         if new != end_id:
             failure_prob = ((SUM_BUFFER_DISTANCE[(v.id,new,new,end_id)]>budget).sum())/SAMPLES
-            if failure_prob <= FAILURE_PROB :
+            if failure_prob <= config.FAILURE_PROB :
                 reward += g.vertices[new].value
                 traversed.append(new)
                 time_to_go = g.vertices[current].get_edge_towards_vertex(new).sample_cost()
@@ -563,8 +539,8 @@ def MCTS_TASE_Backup(toadd,reward,failure_rate):
     # now propagate upwards
     while parent.parent:  # as long as there is a v_k
         
-        if (parent.parent.F[parent.node.id] <= FAILURE_PROB): #v_i is feasible;
-            if parent.F[current.node.id] <= FAILURE_PROB: # consider changes only if not introducing a violation
+        if (parent.parent.F[parent.node.id] <= config.FAILURE_PROB): #v_i is feasible;
+            if parent.F[current.node.id] <= config.FAILURE_PROB: # consider changes only if not introducing a violation
                 if parent.parent.Q[parent.node.id] < parent.node.value + parent.Q[current.node.id]: # found path with better reward?
                     parent.parent.Q[parent.node.id] = parent.node.value + parent.Q[current.node.id]
                     parent.parent.F[parent.node.id] = parent.F[current.node.id]
@@ -610,7 +586,7 @@ def check_early_exit(root):
 def MCTS_TASE_pick_root_action(root,og):  # picks the best action on the root among those who satisfy the failure constraints
     candidates = {}
     for i in root.children:
-        if root.F[i.node.id] <= FAILURE_PROB:
+        if root.F[i.node.id] <= config.FAILURE_PROB:
             candidates[i.node.id] = root.Q[i.node.id]
     if candidates:
         return get_key_with_max_val(candidates)
@@ -728,148 +704,139 @@ def MCTS_TASE_simulate(og,max_iterations,verbose=True):
 
 
 def read_configuration(fname):
-    config = configparser.ConfigParser()
+    
+    configfile = configparser.ConfigParser()
     print("Reading configuration file ",fname)
     if os.path.exists(fname):
-        config.read(fname)
+        configfile.read(fname)
     else:
         raise Exception("Can't read configuration file {}".format(fname))
-    global NVERTICES,DEPTHLIMIT,NTRIALS, RETRIES, REPETITIONS,CONTRACTION,LIMITEXPLOREDEPTH
-    global EPSMIN,EPSINC,EPSN,ITERMIN,ITERINC,ITERN,MINFREQ,VERBOSE,BIAS,BUDGET
-    global SAMPLESMIN,SAMPLESINC,SAMPLESN,FAILURE_PROB,GREEDY_THRESHOLD,ROLLOUT
     
-    if config['MAIN']['NTRIALS'] is None:
-        print('Missing configuration parameter ',NTRIALS)
+    if configfile['MAIN']['NTRIALS'] is None:
+        print('Missing configuration parameter NTRIALS')
     else:
-         NTRIALS = int(config['MAIN']['NTRIALS'])
+         config.NTRIALS = int(config['MAIN']['NTRIALS'])
          
-    if config['MAIN']['NVERTICES'] is None:
-        print('Missing configuration parameter ',NVERTICES)
+    if configfile['MAIN']['NVERTICES'] is None:
+        print('Missing configuration parameter NVERTICES')
     else:
-         NVERTICES = int(config['MAIN']['NVERTICES'])
+         config.NVERTICES = int(config['MAIN']['NVERTICES'])
          
-    if config['MAIN']['DEPTHLIMIT'] is None:
-        print('Missing configuration parameter ',DEPTHLIMIT)
+    if configfile['MAIN']['DEPTHLIMIT'] is None:
+        print('Missing configuration parameter DEPTHLIMIT')
     else:
-         DEPTHLIMIT = int(config['MAIN']['DEPTHLIMIT'])   
+         config.DEPTHLIMIT = int(config['MAIN']['DEPTHLIMIT'])   
          
-    if config['MAIN']['RETRIES'] is None:
-        print('Missing configuration parameter ',RETRIES)
+    if configfile['MAIN']['RETRIES'] is None:
+        print('Missing configuration parameter RETRIES')
     else:
-         RETRIES = int(config['MAIN']['RETRIES'])     
+         config.RETRIES = int(config['MAIN']['RETRIES'])     
     
-    if config['MAIN']['REPETITIONS'] is None:
-        print('Missing configuration parameter ',REPETITIONS)
+    if configfile['MAIN']['REPETITIONS'] is None:
+        print('Missing configuration parameter REPETITIONS')
     else:
-         REPETITIONS = int(config['MAIN']['REPETITIONS']) 
+         config.REPETITIONS = int(config['MAIN']['REPETITIONS']) 
          
-    if config['MAIN']['EPSMIN'] is None:
-        print('Missing configuration parameter ',EPSMIN)
+    if configfile['MAIN']['EPSMIN'] is None:
+        print('Missing configuration parameter EPSMIN')
     else:
-         EPSMIN = float(config['MAIN']['EPSMIN']) 
+         config.EPSMIN = float(config['MAIN']['EPSMIN']) 
          
-    if config['MAIN']['EPSN'] is None:
-        print('Missing configuration parameter ',EPSN)
+    if configfile['MAIN']['EPSN'] is None:
+        print('Missing configuration parameter EPSN')
     else:
-         EPSN = int(config['MAIN']['EPSN']) 
+         config.EPSN = int(config['MAIN']['EPSN']) 
         
-    if config['MAIN']['EPSINC'] is None:
-        print('Missing configuration parameter ',EPSINC)
+    if configfile['MAIN']['EPSINC'] is None:
+        print('Missing configuration parameter EPSINC')
     else:
-         EPSINC = float(config['MAIN']['EPSINC']) 
+         config.EPSINC = float(config['MAIN']['EPSINC']) 
          
-    if config['MAIN']['ITERMIN'] is None:
-        print('Missing configuration parameter ',ITERMIN)
+    if configfile['MAIN']['ITERMIN'] is None:
+        print('Missing configuration parameter ITERMIN')
     else:
-         ITERMIN = int(config['MAIN']['ITERMIN']) 
+         config.ITERMIN = int(config['MAIN']['ITERMIN']) 
          
-    if config['MAIN']['ITERINC'] is None:
-        print('Missing configuration parameter ',ITERINC)
+    if configfile['MAIN']['ITERINC'] is None:
+        print('Missing configuration parameter ITERINC')
     else:
-         ITERINC = int(config['MAIN']['ITERINC']) 
+         config.ITERINC = int(config['MAIN']['ITERINC']) 
         
-    if config['MAIN']['ITERN'] is None:
-        print('Missing configuration parameter ',ITERN)
+    if configfile['MAIN']['ITERN'] is None:
+        print('Missing configuration parameter ITERN')
     else:
-         ITERN = int(config['MAIN']['ITERN']) 
+         config.ITERN = int(config['MAIN']['ITERN']) 
          
-    if config['MAIN']['MINFREQ'] is None:
-        print('Missing configuration parameter ',MINFREQ)
+    if configfile['MAIN']['MINFREQ'] is None:
+        print('Missing configuration parameter MINFREQ')
     else:
-         MINFREQ = int(config['MAIN']['MINFREQ']) 
+         config.MINFREQ = int(config['MAIN']['MINFREQ']) 
          
-    if config['MAIN']['SAMPLESMIN'] is None:
-        print('Missing configuration parameter ',SAMPLESMIN)
+    if configfile['MAIN']['SAMPLESMIN'] is None:
+        print('Missing configuration parameter SAMPLESMIN')
     else:
-         SAMPLESMIN = int(config['MAIN']['SAMPLESMIN'])   
+         config.SAMPLESMIN = int(config['MAIN']['SAMPLESMIN'])   
          
-    if config['MAIN']['SAMPLESINC'] is None:
-        print('Missing configuration parameter ',SAMPLESINC)
+    if configfile['MAIN']['SAMPLESINC'] is None:
+        print('Missing configuration parameter SAMPLESINC')
     else:
-         SAMPLESINC = int(config['MAIN']['SAMPLESINC'])   
+         config.SAMPLESINC = int(config['MAIN']['SAMPLESINC'])   
          
-    if config['MAIN']['SAMPLESN'] is None:
-        print('Missing configuration parameter ',SAMPLESN)
+    if configfile['MAIN']['SAMPLESN'] is None:
+        print('Missing configuration parameter SAMPLESN')
     else:
-         SAMPLESN = int(config['MAIN']['SAMPLESN'])   
+        config. SAMPLESN = int(config['MAIN']['SAMPLESN'])   
          
-    if config['MAIN']['BIAS'] is None:
-        print('Missing configuration parameter ',BIAS)
+    if configfile['MAIN']['BIAS'] is None:
+        print('Missing configuration parameter BIAS')
     else:
-         BIAS = float(config['MAIN']['BIAS']) 
+         config.BIAS = float(config['MAIN']['BIAS']) 
     
-    if config['MAIN']['CONTRACTION'] is None:
-        print('Missing configuration parameter ',CONTRACTION)
+    if configfile['MAIN']['CONTRACTION'] is None:
+        print('Missing configuration parameter CONTRACTION')
     else:
-         CONTRACTION = float(config['MAIN']['CONTRACTION'])         
+         config.CONTRACTION = float(config['MAIN']['CONTRACTION'])         
 
-    if config['MAIN']['VERBOSE'] is None:
-        print('Missing configuration parameter ',VERBOSE)
+    if configfile['MAIN']['VERBOSE'] is None:
+        print('Missing configuration parameter VERBOSE')
     else:
-         VERBOSE = (config['MAIN']['VERBOSE'] == "True")
+         config.VERBOSE = (config['MAIN']['VERBOSE'] == "True")
          
-    if config['MAIN']['LIMITEXPLOREDEPTH'] is None:
-        print('Missing configuration parameter ',LIMITEXPLOREDEPTH)
+    if configfile['MAIN']['LIMITEXPLOREDEPTH'] is None:
+        print('Missing configuration parameter LIMITEXPLOREDEPTH')
     else:
-         LIMITEXPLOREDEPTH = (config['MAIN']['LIMITEXPLOREDEPTH'] == "True") 
+         config.LIMITEXPLOREDEPTH = (config['MAIN']['LIMITEXPLOREDEPTH'] == "True") 
          
-    if config['MAIN']['BUDGET'] is None:
-        print('Missing configuration parameter ',BUDGET)
+    if configfile['MAIN']['BUDGET'] is None:
+        print('Missing configuration parameter BUDGET')
     else:
-         BUDGET = float(config['MAIN']['BUDGET'])  
+         config.BUDGET = float(config['MAIN']['BUDGET'])  
          
-    if config['MAIN']['FAILURE_PROB'] is None:
-        print('Missing configuration parameter ',FAILURE_PROB)
+    if configfile['MAIN']['FAILURE_PROB'] is None:
+        print('Missing configuration parameter FAILURE_PROB')
     else:
-         FAILURE_PROB = float(config['MAIN']['FAILURE_PROB']) 
+         config.FAILURE_PROB = float(config['MAIN']['FAILURE_PROB']) 
          
-    if config['MAIN']['GREEDY_THRESHOLD'] is None:
-        print('Missing configuration parameter ',GREEDY_THRESHOLD)
+    if configfile['MAIN']['GREEDY_THRESHOLD'] is None:
+        print('Missing configuration parameter GREEDY_THRESHOLD')
     else:
-         GREEDY_THRESHOLD = float(config['MAIN']['GREEDY_THRESHOLD'])
+         config.GREEDY_THRESHOLD = float(config['MAIN']['GREEDY_THRESHOLD'])
          
-    if config['MAIN']['ROLLOUT'] is None:
-        print('Missing configuration parameter ',ROLLOUT)
+    if configfile['MAIN']['ROLLOUT'] is None:
+        print('Missing configuration parameter ROLLOUT')
     else:
-         ROLLOUT = int(config['MAIN']['ROLLOUT'])
+         config.ROLLOUT = int(config['MAIN']['ROLLOUT'])
+         
+    if configfile['MAIN']['FILENAME'] is None:
+        print('Missing mandatory configuration parameter FILENAME. Aboriting')
+        exit(1)
+    else:
+         config.FILENAME = configfile['MAIN']['FILENAME']     
          
     print('Done reading configuration')
     
     
-parser = argparse.ArgumentParser(description='Process parameters.')
-parser.add_argument(
-    '--logdir', 
-    type = str, 
-    default = 'sandbox',
-    help = 'Directory where data will be saved')
 
-parser.add_argument(
-    '--conf', 
-    type = str, 
-    default = 'config.txt',
-    help = 'Config file to use')
-
-args = parser.parse_args()
 
 def create_nested_path(path):
     # first break down all intermediate folders
@@ -892,9 +859,13 @@ if __name__ == "__main__":
     
     print('Starting...')
     
+    parser = argparse.ArgumentParser(description='Process parameters.')
+    parser.add_argument('--logdir', type = str, default = 'sandbox',help = 'Directory where data will be saved')
+    parser.add_argument('--conf', type = str, default = 'config.txt',help = 'Config file to use')
+    args = parser.parse_args()
+    
     read_configuration(args.conf)   
-    og = graph.OrienteeringGraph('graph_test_{}.mat'.format(NVERTICES))
-
+    
     if not os.path.isdir(args.logdir):
         print("{} does not exist and will be created".format(args.logdir))
         # create all intermediate folders if needed
@@ -904,36 +875,41 @@ if __name__ == "__main__":
     shutil.copyfile(args.conf,os.path.join(args.logdir,"config.txt"))
     shutil.copyfile("MCTS.py",os.path.join(args.logdir,"MCTS.py"))
     
-    print('Processing graph with {} vertices'.format(NVERTICES))
-    print('Budget is ',BUDGET)
-    og.set_budget(BUDGET)
+    
+    og = graph.OrienteeringGraph('../datasets/'+config.FILENAME)
+    config.NVERTICES = og.get_n_vertices()
+    og.budget = config.BUDGET
+    
+    print('Processing graph with {} vertices'.format(config.NVERTICES))
+    print('Budget is ',config.BUDGET)
+    og.set_budget(config.BUDGET)
    
 
     
-    print("ROLLOUT:",ROLLOUT)
+    print("ROLLOUT:",config.ROLLOUT)
     
-    if ROLLOUT == 1:
+    if config.ROLLOUT == 1:
         rollout_function = MCTS_TASE_greedy_rollout
-    elif ROLLOUT ==2:
+    elif config.ROLLOUT ==2:
         rollout_function = MCTS_TASE_greedy_rollout2
-    elif ROLLOUT == 3:
+    elif config.ROLLOUT == 3:
         rollout_function = MCTS_TASE_greedy_rollout3
-    elif ROLLOUT == 4:
+    elif config.ROLLOUT == 4:
         rollout_function = MCTS_TASE_greedy_rollout4
     else:
         raise ValueError("Unknown rollout function")
         
     print('Starting simulation')
-    ntrials = NTRIALS
+    ntrials = config.NTRIALS
     
     #biases = np.linspace(0,1,11).tolist()
     biases = [0.2] 
     
-    epsilon_vals = [(EPSMIN + i*EPSINC) for i in range(EPSN)]
+    epsilon_vals = [(config.EPSMIN + i*config.EPSINC) for i in range(config.EPSN)]
     best_reward = -1
     k_bias = 5
-    iterations_list =  [(ITERMIN + i*ITERINC) for i in range(ITERN)]
-    samples_list = [(SAMPLESMIN + i*SAMPLESINC) for i in range(SAMPLESN)]
+    iterations_list =  [(config.ITERMIN + i*config.ITERINC) for i in range(config.ITERN)]
+    samples_list = [(config.SAMPLESMIN + i*config.SAMPLESINC) for i in range(config.SAMPLESN)]
     
     best_residual_budget = []
     best_reward = []
@@ -974,7 +950,7 @@ if __name__ == "__main__":
                 print("SAMPLES=",SAMPLES)
                 print("Iterations=",iterations)
                 print("Epsilon=",EPSILON)
-                print("Failure probability=",FAILURE_PROB)
+                print("Failure probability=",config.FAILURE_PROB)
 
                 bar = Bar('Processing', max=ntrials)
                 residual = 0
@@ -983,7 +959,7 @@ if __name__ == "__main__":
                     CHILDREN_MAP = {}
                     MCTS_TASE_prefill_buffer(og)
                     start = time.time()
-                    reward,budget,tree,traversed,pulls = MCTS_TASE_simulate(og,iterations,VERBOSE)   
+                    reward,budget,tree,traversed,pulls = MCTS_TASE_simulate(og,iterations,config.VERBOSE)   
                     end = time.time()
                     rewards.append(reward)
                     budgets.append(budget)
@@ -1028,7 +1004,7 @@ if __name__ == "__main__":
                   #  best_tree_leaves.append(MCTS_tree_leaf_number(tree))
                   #  best_tree_depth.append(MCTS_tree_depth(tree))
                   #  best_p_factor.append(P_FACTOR)
-                    if (av_rev >= absolute_best) and (failures/ntrials <= FAILURE_PROB):
+                    if (av_rev >= absolute_best) and (failures/ntrials <= config.FAILURE_PROB):
                         found_absolute_best = True
                         absolute_best = av_rev
                         best_iterations_val = iterations
@@ -1072,11 +1048,11 @@ if __name__ == "__main__":
         
     with open(os.path.join(args.logdir,'results.txt'),"w") as f:
         f.write("Comprehensive Results\n")
-        f.write("Vertices:{}\n".format(NVERTICES))
-        f.write("Budget:{}\n".format(BUDGET))
-        f.write("Failure Probability:{}\n".format(FAILURE_PROB))
-        f.write("Iterations:{}\n".format(ITERMIN))
-        f.write("Independent Runs:{}\n".format(NTRIALS))
+        f.write("Vertices:{}\n".format(config.NVERTICES))
+        f.write("Budget:{}\n".format(config.BUDGET))
+        f.write("Failure Probability:{}\n".format(config.FAILURE_PROB))
+        f.write("Iterations:{}\n".format(config.ITERMIN))
+        f.write("Independent Runs:{}\n".format(config.NTRIALS))
         f.write("Average reward: {}\n".format(best_reward))
         f.write("Average residual budget: {}\n".format(best_residual_budget))
         f.write("Average pulls: {}\n".format(best_pulls))
