@@ -804,8 +804,6 @@ def read_configuration(fname):
     print('Done reading configuration')
     
     
-
-
 def create_nested_path(path):
     # first break down all intermediate folders
     l = []
@@ -829,7 +827,9 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Process parameters.')
     parser.add_argument('--logdir', type = str, default = 'sandbox',help = 'Directory where data will be saved')
-    parser.add_argument('--conf', type = str, default = 'config.txt',help = 'Config file to use')
+  #  parser.add_argument('--conf', type = str, default = 'config.txt',help = 'Config file to use')
+    parser.add_argument('--conf', type = str, default = 'config_files/config_ulysses16_50_005.txt',help = 'Config file to use')
+    
     args = parser.parse_args()
     
     read_configuration(args.conf)   
