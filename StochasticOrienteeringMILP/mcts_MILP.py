@@ -487,44 +487,19 @@ if __name__ == "__main__":
     failure_list = []
      
     for i in range(config.REPEATS):
-  
-        #prob = create_pulp_instance(og,config.ALPHAMILP)
-        #if config.SOLVER == 'Gurobi':
-           # print('Starting Gurobi...')
-        #    path_to_gurobi = r'/usr/local/bin/gurobi_cl'
-           # print('Creating solver...')
-        #    solver = pulp.GUROBI_CMD(path=path_to_gurobi,msg=0,timeLimit=600)
-           # print('Calling solver...')
-        #    a = prob.solve(solver)
-       # else:
-#            print('Starting CBC...')
-       #     a = prob.solve(pulp.PULP_CBC_CMD(msg=0))  
 
         a,prob = solve_orienteering_problem_MILP(og)
 
         if a == 1:
-            #print("Problem correctly solved")
-          #  print("Solution")
-            #varsdict = {}
-            #for v in prob.variables():
-            #    varsdict[v.name] = v.varValue
-            #print(varsdict)
-            #extract_solution(prob)
+            
             sol_length = compute_solution_length(prob,og)
-            #print("Length of the solution: {}".format(sol_length))
             obj_value = prob.objective.value()
             obj_list.append(obj_value)
             time_list.append(prob.solutionTime)
-            #print("Objective value: {}".format(obj_value))
-            #print("Time spent: {}".format(prob.solutionTime))
-            #print('Solution found. Now simulating it {} times'.format(config.N_SIM))
             failures = 0
             for _ in range(config.N_SIM):
                 if simulate_solution_length(prob,og) > og.budget:
                     failures += 1
-            #print("Nominal failure probability: {}".format(config.FAILURE_PROBABILITY))
-            #print("Target failure probability: {}".format(config.ALPHA))
-            #print("Effective failure probability: {}".format(failures/config.N_SIM))
             failure_list.append(failures/config.N_SIM)
         else:
             print("The solver did not solve the problem. Return code is {}".format(a))
@@ -543,7 +518,6 @@ if __name__ == "__main__":
         f.write("Budget:{}\n".format(config.BUDGET))
         f.write("Average Reward: {}\n".format(np.mean(obj_list)))
         f.write("Stddev Reward: {}\n".format(np.std(obj_list)))
-        #f.write("Path length: {}\n".format(sol_length ))
         f.write("Average Solution time: {}\n".format(np.mean(time_list)))
         f.write("Stddev Solution time: {}\n".format(np.std(time_list)))
         f.write("Nominal Failure Probability:{}\n".format(config.FAILURE_PROBABILITY))
