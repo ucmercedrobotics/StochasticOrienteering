@@ -14,6 +14,11 @@ import graph
 import sys
 import scipy.io as sio
 
+import numpy as np
+
+
+MIN_REWARD  = 1
+MAX_REWARD = 4
 
 def load_graph(fname):
     problem = tsplib95.load(fname)
@@ -25,7 +30,7 @@ def convert_graph(G):
     og = graph.OrienteeringGraph(nvertices)
     j = 0
     for i in G.nodes:
-        nv = graph.OrienteeringVertex(G.nodes[i]['coord'][0],G.nodes[i]['coord'][1],1,j)
+        nv = graph.OrienteeringVertex(G.nodes[i]['coord'][0],G.nodes[i]['coord'][1],MIN_REWARD + np.random.uniform(MIN_REWARD,MAX_REWARD),j)
         og.vertices[j]= nv
         j = j+1
         
@@ -86,6 +91,8 @@ if __name__=="__main__":
         print("Usage: python convertutility inputfile.tsp outputfile.mat")
         exit(1)
         
+    print("Setting random seed to 1 for repeatability.")    
+    np.random.sample(1)    
     G = load_graph(sys.argv[1])
     graph.VERBOSE = False # be quiet
     orienteering_graph = convert_graph(G)
@@ -95,7 +102,7 @@ if __name__=="__main__":
     
     if graph.compare_graphs(orienteering_graph, og):
         print("Conversion successfully commpleted")
-        print(f"Budget set to {og.budget}")
+        print(f"Budget set to {og.budget}; adjust as needed.")
     else:
         print("Conversion unsuccessful")
     
