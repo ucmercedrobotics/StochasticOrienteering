@@ -852,6 +852,7 @@ if __name__ == "__main__":
     print('Processsing file ../datasets/'+config.FILENAME)
     print('Number of vertices:',config.NVERTICES)
     print('Budget:',config.BUDGET)
+    print('Total reward: ',og.get_total_reward())
     print("Rollout strategy:",config.ROLLOUT)
     
     if config.ROLLOUT == 1:
