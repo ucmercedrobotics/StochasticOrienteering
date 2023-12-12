@@ -468,8 +468,9 @@ if __name__ == "__main__":
   #  print(sum([a.value for a in og.vertices.values()]))
   
     print('Processing graph with {} vertices'.format(config.NVERTICES))
-    print('Budget is ',config.BUDGET)
-    print('Failure probability is ',config.FAILURE_PROBABILITY)
+    print('Total reward: ',og.get_total_reward())
+    print('Budget: ',config.BUDGET)
+    print('Failure probability: ',config.FAILURE_PROBABILITY)
     
    
   #  print(prob)
