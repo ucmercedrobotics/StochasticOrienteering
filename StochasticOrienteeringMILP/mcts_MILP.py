@@ -515,7 +515,7 @@ if __name__ == "__main__":
    
     with open(os.path.join(args.logdir,'results.txt'),"w") as f:
         f.write("Comprehensive Results\n")
-        f.write("Testcase: ",config.FILENAME)
+        f.write("Testcase: {}\n".format(config.FILENAME))
         f.write("Vertices:{}\n".format(config.NVERTICES))
         f.write("Budget:{}\n".format(config.BUDGET))
         f.write("Average Reward: {}\n".format(np.mean(obj_list)))
