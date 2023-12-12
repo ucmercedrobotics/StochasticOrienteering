@@ -827,8 +827,8 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Process parameters.')
     parser.add_argument('--logdir', type = str, default = 'sandbox',help = 'Directory where data will be saved')
-  #  parser.add_argument('--conf', type = str, default = 'config.txt',help = 'Config file to use')
-    parser.add_argument('--conf', type = str, default = 'config_files/config_ulysses16_50_005.txt',help = 'Config file to use')
+    parser.add_argument('--conf', type = str, default = 'config.txt',help = 'Config file to use')
+  #  parser.add_argument('--conf', type = str, default = 'config_files/config_ulysses16_50_005.txt',help = 'Config file to use')
     
     args = parser.parse_args()
     
@@ -850,8 +850,8 @@ if __name__ == "__main__":
     og.set_budget(config.BUDGET)
     
     print('Processsing file ../datasets/'+config.FILENAME)
-    print('Processing graph with {} vertices'.format(config.NVERTICES))
-    print('Budget is ',config.BUDGET)
+    print('Number of vertices:',config.NVERTICES)
+    print('Budget:',config.BUDGET)
     print("Rollout strategy:",config.ROLLOUT)
     
     if config.ROLLOUT == 1:
@@ -935,7 +935,7 @@ if __name__ == "__main__":
                     complete_reward_series.append(reward)
                     complete_budget_series.append(budget)
                     complete_pulls_series.append(pulls)
-                    if True:
+                    if config.VERBOSE:
                         print("\nReward: ",reward)    
                         print("Budget: ",budget)
                         print("Time: ",end-start)
