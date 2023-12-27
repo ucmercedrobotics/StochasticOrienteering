@@ -16,7 +16,7 @@ import sys
 import glob
 
 #BASE_FOLDER = "MILPTASEAPRIL2023"   # results original submission
-BASE_FOLDER = "MILP2023_11_30"
+BASE_FOLDER = "MILP2023_12_22"
 
 
 def analyze_and_print(folder):
@@ -25,13 +25,14 @@ def analyze_and_print(folder):
     results_map = dict()
     
     for i in TESTCASES:
-        filelist = glob.glob(folder,i+'*')
+        filelist = glob.glob(folder+"/"+i+'*')
+        filelist.sort()
         for j in filelist:
-            filename = folder + "/" + j + "results.txt"
+            filename =  j + "/results.txt"
             tokens = j.split('_')
-            budget = tokens[1]
-            probability = tokens[2]
-            vertices = tokens[0][-2:]
+            budget = tokens[3]
+            probability = tokens[4]
+            vertices = tokens[2][-2:]
             f = open(filename,"r")
             results = []
             for x in f:
@@ -47,8 +48,8 @@ def analyze_and_print(folder):
                     tmp = x.split(":")[1].strip(" \n")
                     tmp = tmp.split(".")[0] + "." + tmp.split(".")[1][0:4]
                     results.append(tmp)
-                key = (i,vertices,budget,probability)
-                results_map[key] = list(results)
+            key = (i,vertices,budget,probability)
+            results_map[key] = list(results)
             f.close()
     
     
@@ -56,16 +57,17 @@ def analyze_and_print(folder):
     
     for i in results_map.keys():
        values = results_map[i]
-       print(f"{i[0]} & {i[1]} & {i[2]} & {values[0]} & {values[2]} & {values[1]}")
+       print(f"{i[0]} & {i[1]} & {i[2]} & {i[3]} & {values[0]} & {values[2]} & {values[1]}")
                 
                 
    
     
 if __name__ == "__main__":
-    if len(sys.argv) == 1 :
-        print("Base folder not provided; looking into folder ",BASE_FOLDER)
-        analyze_and_print(BASE_FOLDER)
-    else:
-        analyze_and_print(sys.argv[1])
+    if len(sys.argv) > 1 :
+        BASE_FOLDER = sys.argv[1]
+        
+    print("Printing results from folder ",BASE_FOLDER)
+    analyze_and_print(BASE_FOLDER)
+    
         
     

@@ -7,4 +7,4 @@ SOLVER=Gurobi
 BUDGET=2
 REPEATS=50
 ALPHAMILP=0.05
-FILENAME=graph_test_10.mat
+FILENAME=ulysses16.mat
