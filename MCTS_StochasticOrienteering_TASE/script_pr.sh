@@ -7,6 +7,6 @@ do
     fi
     echo "PROBABILITY_RANDOM="$i >> config_files/config_pr.txt
     #cat config_files/config_pr.txt
-    python MCTS.py --conf config_files/config_time.txt --logdir MCTS`date "+%Y_%m_%d"`/Pr$i
+    python MCTS.py --conf config_files/config_pr.txt --logdir MCTS`date "+%Y_%m_%d"`/Pr$i
     
 done
