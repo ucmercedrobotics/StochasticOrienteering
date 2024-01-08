@@ -398,7 +398,7 @@ def MCTS_TASE_greedy_rollout3(leaf,g,budget,vs,visited):
         children = set(CHILDREN_MAP[current]) - set(unusable.keys())
         children = list(children)
 
-        if np.random.uniform() < 0.6:
+        if np.random.uniform() < config.PROBABILTY_RANDOM:
             new = np.random.choice(children)
         else:
             new = MCTS_get_new_vertex_greedy(g,current,children,budget,unusable)
@@ -784,6 +784,11 @@ def read_configuration(fname):
         print('Missing configuration parameter FAILURE_PROB')
     else:
          config.FAILURE_PROB = float(configfile['MAIN']['FAILURE_PROB']) 
+         
+    if configfile['MAIN']['PROBABILTY_RANDOM'] is None:
+        print(f'Missing configuration parameter PROBABILTY_RANDOM. Using default value {config.PROBABILTY_RANDOM}')
+    else:
+         config.PROBABILTY_RANDOM = float(configfile['MAIN']['PROBABILTY_RANDOM'])
          
     if configfile['MAIN']['GREEDY_THRESHOLD'] is None:
         print('Missing configuration parameter GREEDY_THRESHOLD')
