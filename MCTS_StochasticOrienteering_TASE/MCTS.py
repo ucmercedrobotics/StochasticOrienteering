@@ -785,10 +785,11 @@ def read_configuration(fname):
     else:
          config.FAILURE_PROB = float(configfile['MAIN']['FAILURE_PROB']) 
          
-    if not ('PROBABILTY_RANDOM' in configfile['MAIN']):
+    if not ('PROBABILITY_RANDOM' in configfile['MAIN']):
         print(f'Missing configuration parameter PROBABILTY_RANDOM. Using default value {config.PROBABILTY_RANDOM}')
     else:
-         config.PROBABILTY_RANDOM = float(configfile['MAIN']['PROBABILTY_RANDOM'])
+        config.PROBABILTY_RANDOM = float(configfile['MAIN']['PROBABILITY_RANDOM'])
+        print(f'Setting PROABABILTY_RANDOM to {config.PROBABILTY_RANDOM}')
          
     if configfile['MAIN']['GREEDY_THRESHOLD'] is None:
         print('Missing configuration parameter GREEDY_THRESHOLD')
