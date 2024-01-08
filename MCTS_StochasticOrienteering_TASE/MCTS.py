@@ -785,7 +785,7 @@ def read_configuration(fname):
     else:
          config.FAILURE_PROB = float(configfile['MAIN']['FAILURE_PROB']) 
          
-    if configfile['MAIN']['PROBABILTY_RANDOM'] is None:
+    if not ('PROBABILTY_RANDOM' in configfile['MAIN']):
         print(f'Missing configuration parameter PROBABILTY_RANDOM. Using default value {config.PROBABILTY_RANDOM}')
     else:
          config.PROBABILTY_RANDOM = float(configfile['MAIN']['PROBABILTY_RANDOM'])
