@@ -1021,6 +1021,7 @@ if __name__ == "__main__":
         
     with open(os.path.join(args.logdir,'results.txt'),"w") as f:
         f.write("Comprehensive Results\n")
+        f.write("Pr value:{}\n".format(config.PROBABILTY_RANDOM))
         f.write("Vertices:{}\n".format(config.NVERTICES))
         f.write("Budget:{}\n".format(config.BUDGET))
         f.write("Failure Probability:{}\n".format(config.FAILURE_PROB))
